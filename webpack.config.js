@@ -1,4 +1,3 @@
-const webpack = require("webpack");
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
@@ -8,10 +7,9 @@ module.export = {
   mode: "development",
   target: "web",
   devtool: "cheap-module-source-map",
-  entry: ["core-js", "./src/index"],
+  entry: path.resolve(__dirname, "src/index.js"),
   output: {
-    path: path.resolve(__dirname, "build"),
-    publicPath: "/",
+    path: __dirname + "./src/vendor",
     filename: "bundle.js",
   },
   devServer: {
@@ -22,18 +20,19 @@ module.export = {
     headers: { "Access-Control-Allow-Origin": "*" },
     https: false,
   },
-  plugins: [
-    new HtmlWebpackPlugin({
-      template: "./src/index.html",
-      favicon: "./src/favicon.ico",
-    }),
-  ],
   module: {
     rules: [
       {
         test: /\.(js|jsx)$/,
-        exclude: /(node_modules|bower_components)/,
-        use: ["babel-loader", "eslint-webpack-plugin"],
+        exclude: /node_modules/,
+        include: "./src/",
+        use: {
+          loader: ["babel-loader"],
+        },
+      },
+      {
+        test: /(\.html)$/,
+        use: "html-loader",
       },
       {
         test: /(\.css)$/,
@@ -42,6 +41,12 @@ module.export = {
     ],
   },
   resolve: {
-    extensions: [".js"],
+    extensions: ["", ".js", ".jsx"],
   },
+  plugins: [
+    new HtmlWebpackPlugin({
+      filename: "./index.html",
+      template: "./src/index.html",
+    }),
+  ],
 };
